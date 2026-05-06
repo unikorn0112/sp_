@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>春天宣言活動報名</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-    /* 1. 全域背景：使用圖片中的溫暖米色 */
+    /* 1. 全域背景：溫暖米色 */
     body {
       background-color: #f4ece4;
       font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
@@ -66,6 +67,7 @@
       width: 100%;
     }
 
+    /* 7. 唯讀費用欄位樣式 */
     #price {
       background-color: #f8f3ef !important;
       color: #8d6e63;
@@ -77,7 +79,6 @@
   <section class="section">
     <div class="container">
       <h1 class="title is-4">春天宣言活動報名</h1>
-      
       <form id="enrollForm">
         <div class="field">
           <label class="label">1. 選擇活動</label>
@@ -127,8 +128,14 @@
   </section>
 
   <script>
-    // 請將下方的網址替換成你部署 GAS 後產生的 Web App URL
+    // 配置資訊
+    const LIFF_ID = "2009990009-gKTWxCp3"; 
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzGqZArV6Ess1yjbKBM2hV_iBXW28xjB811EGu1k6rjjKhpIweheLv8u5WKrD1DI5zT/exec";
+
+    // 初始化 LIFF
+    liff.init({ liffId: LIFF_ID })
+      .then(() => { console.log("LIFF Ready"); })
+      .catch(err => console.error(err));
 
     const dataConfig = {
       "乳房護理培訓課程": { price: "39800元", dates: ["5/16+5/17", "5/23+5/24", "5/30+5/31"] },
@@ -141,54 +148,57 @@
     };
 
     function updateOptions() {
-      const activity = document.getElementById('activity').value;
-      const dateSelect = document.getElementById('date');
-      const priceInput = document.getElementById('price');
-      
-      priceInput.value = dataConfig[activity].price;
-      dateSelect.innerHTML = "";
-      dataConfig[activity].dates.forEach(d => {
-        let opt = document.createElement('option');
-        opt.value = d;
-        opt.innerHTML = d;
-        dateSelect.appendChild(opt);
+      const act = document.getElementById('activity').value;
+      const dateSel = document.getElementById('date');
+      document.getElementById('price').value = dataConfig[act].price;
+      dateSel.innerHTML = "";
+      dataConfig[act].dates.forEach(d => { 
+        let o = document.createElement('option'); 
+        o.value = d; 
+        o.innerHTML = d; 
+        dateSel.appendChild(o); 
       });
     }
-
-    // 初始化選單
     window.onload = updateOptions;
 
-    // 表單提交處理
-    document.getElementById('enrollForm').onsubmit = function(e) {
+    document.getElementById('enrollForm').onsubmit = async function(e) {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
-      btn.classList.add('is-loading'); // 按鈕顯示讀取中
+      btn.classList.add('is-loading');
 
-      const formData = {
-        activity: document.getElementById('activity').value,
-        date: document.getElementById('date').value,
-        price: document.getElementById('price').value,
-        name: document.getElementsByName('name')[0].value,
-        phone: document.getElementsByName('phone')[0].value,
-        lineId: document.getElementsByName('lineId')[0].value
-      };
+      try {
+        let userId = "";
+        // 確保在 LINE 內開啟時能抓到 ID
+        if (liff.isLoggedIn() || liff.isInClient()) {
+          const profile = await liff.getProfile();
+          userId = profile.userId;
+        }
 
-      fetch(GAS_URL, {
-        method: "POST",
-        mode: "no-cors", // 避免跨網域攔截
-        body: JSON.stringify(formData)
-      })
-      .then(() => {
-        alert("報名資料已成功送出！");
+        const formData = {
+          userId: userId,
+          activity: document.getElementById('activity').value,
+          date: document.getElementById('date').value,
+          price: document.getElementById('price').value,
+          name: document.getElementsByName('name')[0].value,
+          phone: document.getElementsByName('phone')[0].value,
+          lineId: document.getElementsByName('lineId')[0].value
+        };
+
+        // 送出資料到 GAS
+        await fetch(GAS_URL, { 
+          method: "POST", 
+          mode: "no-cors", 
+          body: JSON.stringify(formData) 
+        });
+
+        alert("報名成功！匯款資訊將由官方帳號發送給您。");
+        // 延遲一下關閉視窗，讓使用者看清提示
+        setTimeout(() => { liff.closeWindow(); }, 1000);
+        
+      } catch (err) {
+        alert("提交失敗，請檢查網路。");
         btn.classList.remove('is-loading');
-        document.getElementById('enrollForm').reset();
-        updateOptions();
-      })
-      .catch(err => {
-        alert("提交發生錯誤，請稍後再試。");
-        console.error(err);
-        btn.classList.remove('is-loading');
-      });
+      }
     };
   </script>
 </body>
