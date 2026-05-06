@@ -112,4 +112,84 @@
         </div>
 
         <div class="field">
-          <label class="label">5.
+          <label class="label">5. 報名電話</label>
+          <input class="input" type="tel" name="phone" required placeholder="請輸入電話">
+        </div>
+
+        <div class="field">
+          <label class="label">6. LINE ID</label>
+          <input class="input" type="text" name="lineId" required placeholder="請輸入 LINE ID">
+        </div>
+
+        <button type="submit" id="submitBtn" class="button is-primary">提交報名</button>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    // 請將下方的網址替換成你部署 GAS 後產生的 Web App URL
+    const GAS_URL = "你的_GAS_網頁應用程式網址";
+
+    const dataConfig = {
+      "乳房護理培訓課程": { price: "39800元", dates: ["5/16+5/17", "5/23+5/24", "5/30+5/31"] },
+      "乳房護理培訓分享會": { price: "1000元", dates: ["6/12", "6/19", "6/26"] },
+      "香囊DIY課程": { price: "1000元", dates: ["6/4", "6/11", "6/18", "6/25"] },
+      "頭道 慢慢老": { price: "500元", dates: ["6/13 早上 10:00", "6/20 早上 10:00", "6/27 早上 10:00"] },
+      "溫養 護目": { price: "500元", dates: ["6/13 下午 13:00", "6/20 下午 13:00", "6/27 下午 13:00"] },
+      "溫養 耳 頸": { price: "500元", dates: ["6/13 晚上 18:00", "6/20 晚上 18:00", "6/27 晚上 18:00"] },
+      "溫養 肩 胸 手": { price: "500元", dates: ["6/14 下午 13:00", "6/21 下午 13:00", "6/28 下午 13:00"] }
+    };
+
+    function updateOptions() {
+      const activity = document.getElementById('activity').value;
+      const dateSelect = document.getElementById('date');
+      const priceInput = document.getElementById('price');
+      
+      priceInput.value = dataConfig[activity].price;
+      dateSelect.innerHTML = "";
+      dataConfig[activity].dates.forEach(d => {
+        let opt = document.createElement('option');
+        opt.value = d;
+        opt.innerHTML = d;
+        dateSelect.appendChild(opt);
+      });
+    }
+
+    // 初始化選單
+    window.onload = updateOptions;
+
+    // 表單提交處理
+    document.getElementById('enrollForm').onsubmit = function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.classList.add('is-loading'); // 按鈕顯示讀取中
+
+      const formData = {
+        activity: document.getElementById('activity').value,
+        date: document.getElementById('date').value,
+        price: document.getElementById('price').value,
+        name: document.getElementsByName('name')[0].value,
+        phone: document.getElementsByName('phone')[0].value,
+        lineId: document.getElementsByName('lineId')[0].value
+      };
+
+      fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors", // 避免跨網域攔截
+        body: JSON.stringify(formData)
+      })
+      .then(() => {
+        alert("報名資料已成功送出！");
+        btn.classList.remove('is-loading');
+        document.getElementById('enrollForm').reset();
+        updateOptions();
+      })
+      .catch(err => {
+        alert("提交發生錯誤，請稍後再試。");
+        console.error(err);
+        btn.classList.remove('is-loading');
+      });
+    };
+  </script>
+</body>
+</html>
