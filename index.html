@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>春天宣言活動報名</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <style>
+    /* 1. 全域背景：使用圖片中的溫暖米色 */
+    body {
+      background-color: #f4ece4;
+      font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+      color: #4a3c31;
+      margin: 0;
+      padding: 10px;
+    }
+
+    /* 2. 表單容器：白色基底，帶有細微圓角與陰影 */
+    .container {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(122, 90, 74, 0.1);
+      max-width: 450px;
+      margin: 20px auto;
+    }
+
+    /* 3. 標題設計：深木棕色 */
+    .title {
+      color: #7a5a4a !important;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #dccfc3;
+      padding-bottom: 15px;
+    }
+
+    /* 4. 輸入框與選單：細線框設計 */
+    .input, .select select {
+      border: 1px solid #dccfc3 !important;
+      border-radius: 8px !important;
+      background-color: #fdfbf9 !important;
+    }
+
+    .input:focus, .select select:focus {
+      border-color: #a68d7e !important;
+      box-shadow: 0 0 0 0.125em rgba(166, 141, 126, 0.25) !important;
+    }
+
+    /* 5. 標籤文字顏色 */
+    .label {
+      color: #7a5a4a !important;
+      font-size: 0.95rem;
+    }
+
+    /* 6. 提交按鈕：深木棕色 */
+    .button.is-primary {
+      background-color: #7a5a4a !important;
+      color: #ffffff !important;
+      border: none;
+      border-radius: 8px;
+      height: 3.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    #price {
+      background-color: #f8f3ef !important;
+      color: #8d6e63;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title is-4">春天宣言活動報名</h1>
+      
+      <form id="enrollForm">
+        <div class="field">
+          <label class="label">1. 選擇活動</label>
+          <div class="select is-fullwidth">
+            <select name="activity" id="activity" onchange="updateOptions()">
+              <option value="乳房護理培訓課程">乳房護理培訓課程</option>
+              <option value="乳房護理培訓分享會">乳房護理培訓分享會</option>
+              <option value="香囊DIY課程">香囊DIY課程</option>
+              <option value="頭道 慢慢老">頭道 慢慢老</option>
+              <option value="溫養 護目">溫養 護目</option>
+              <option value="溫養 耳 頸">溫養 耳 頸</option>
+              <option value="溫養 肩 胸 手">溫養 肩 胸 手</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">2. 活動日期</label>
+          <div class="select is-fullwidth">
+            <select name="date" id="date"></select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">3. 活動費用</label>
+          <input class="input" type="text" name="price" id="price" readonly>
+        </div>
+
+        <div class="field">
+          <label class="label">4. 報名姓名</label>
+          <input class="input" type="text" name="name" required placeholder="請輸入姓名">
+        </div>
+
+        <div class="field">
+          <label class="label">5.
